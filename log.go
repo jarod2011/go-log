@@ -49,7 +49,7 @@ func (l Level) String() string {
 func (l Level) Prefix() string {
 	name := l.String()
 	if name != "" {
-		return "[" + name + "] "
+		return "[" + name + "]"
 	}
 	return ""
 }
