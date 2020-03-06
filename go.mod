@@ -1,3 +1,3 @@
-module github.com/jarod2014/go-log
+module github.com/jarod2011/go-log
 
 go 1.14
