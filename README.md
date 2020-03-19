@@ -23,12 +23,12 @@ import (
 )
 
 func main() {
-  log.D().Logf("now is %v", time.Now()) // Debug log level
-	log.I().Log(time.Now())               // Info log level
-	log.SetLevel(log.Warn)                // now debug and info log will not display
-	log.SetPrefix("[haha]")               // so the all level log will prefix with "[haha]"
-	buf := new(bytes.Buffer)
-	log.W().SetWriter(buf) // so the warn log will write to buf
+    log.D().Logf("now is %v", time.Now())           // Debug log level
+    log.I().Log(time.Now())                         // Info log level
+    log.SetLevel(log.Warn)                          // now debug and info log will not display
+    log.SetPrefix("[haha]")                         // so the all level log will prefix with "[haha]"
+    buf := new(bytes.Buffer)
+    log.W().SetWriter(buf)                          // so the warn log will write to buf
 }
 ```
 
