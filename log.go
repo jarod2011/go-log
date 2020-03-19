@@ -1,15 +1,20 @@
 package go_log
 
 import (
+	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"runtime"
+	"time"
 )
 
 var (
-	level              Level
-	de, in, wa, er, fa *mylog
-	prefix             string
+	level          Level
+	de, in, wa, er *mylog
+	fa             *flog
+	prefix         string
 )
 
 func init() {
@@ -18,7 +23,7 @@ func init() {
 	in = newMyLog(Info, os.Stdout)
 	wa = newMyLog(Warn, os.Stdout)
 	er = newMyLog(Error, os.Stderr)
-	fa = newMyLog(Fatal, os.Stderr)
+	fa = newFLog(os.Stderr)
 }
 
 type Level uint8
@@ -88,21 +93,13 @@ type mylog struct {
 
 func (m *mylog) Log(v ...interface{}) {
 	if m.l >= level {
-		if m.l == Fatal {
-			m.Fatal(v...)
-		} else {
-			m.Print(v...)
-		}
+		m.Print(v...)
 	}
 }
 
 func (m *mylog) Logf(format string, v ...interface{}) {
 	if m.l >= level {
-		if m.l == Fatal {
-			m.Fatalf(format, v...)
-		} else {
-			m.Printf(format, v...)
-		}
+		m.Printf(format, v...)
 	}
 }
 
@@ -132,4 +129,39 @@ func E() Logger {
 
 func F() Logger {
 	return fa
+}
+
+type flog struct {
+	*log.Logger
+}
+
+func (l *flog) printStack() {
+	buf := make([]byte, 1<<30)
+	n := runtime.Stack(buf, true)
+	if n > 0 {
+		out := new(bytes.Buffer)
+		fmt.Fprint(out, "==== Stack Start ====\n")
+		fmt.Fprintf(out, "Time: %v\n", time.Now())
+		fmt.Fprint(out, string(buf[:n]))
+		fmt.Fprint(out, "==== Stack End ====\n")
+		out.WriteTo(l.Logger.Writer())
+	}
+}
+
+func (l *flog) Log(v ...interface{}) {
+	l.printStack()
+	l.Logger.Fatal(v...)
+}
+
+func (l *flog) Logf(format string, v ...interface{}) {
+	l.printStack()
+	l.Logger.Fatalf(format, v...)
+}
+
+func (f *flog) SetWriter(writer io.Writer) {
+	f.Logger.SetOutput(writer)
+}
+
+func newFLog(writer io.Writer) *flog {
+	return &flog{log.New(writer, Fatal.Prefix(), log.LstdFlags)}
 }
