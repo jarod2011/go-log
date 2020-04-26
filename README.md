@@ -2,6 +2,8 @@
 
 a simple go log package
 
+[![Build Status](https://travis-ci.org/jarod2011/go-log.svg?branch=master)](https://travis-ci.org/jarod2011/go-log)
+
 ## log level
 
 - Debug
