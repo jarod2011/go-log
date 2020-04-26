@@ -12,6 +12,7 @@ var count uint32
 
 func TestFlog_Log(t *testing.T) {
 	log.SetLevel(log.Info)
+	log.SetFatalExit(false)
 	timeStart = time.Now()
 	t1()
 	t.Log(count)
@@ -28,9 +29,9 @@ func t1() {
 		}
 	}()
 	for i := 0; i < 10; i++ {
-		atomic.AddUint32(&count, 1)
 		t2(i)
 		time.Sleep(time.Millisecond * 5)
+		atomic.AddUint32(&count, 1)
 	}
 }
 

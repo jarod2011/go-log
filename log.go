@@ -15,6 +15,7 @@ var (
 	de, in, wa, er *mylog
 	fa             *flog
 	prefix         string
+	faExit bool
 )
 
 func init() {
@@ -57,6 +58,10 @@ func (l Level) Prefix() string {
 		return "[" + name + "]"
 	}
 	return ""
+}
+
+func SetFatalExit(exit bool) {
+	faExit = exit
 }
 
 func SetLevel(l Level) {
@@ -150,12 +155,20 @@ func (l *flog) printStack() {
 
 func (l *flog) Log(v ...interface{}) {
 	l.printStack()
-	l.Logger.Fatal(v...)
+	if faExit {
+		l.Logger.Fatal(v...)
+	} else {
+		l.Logger.Panic(v...)
+	}
 }
 
 func (l *flog) Logf(format string, v ...interface{}) {
 	l.printStack()
-	l.Logger.Fatalf(format, v...)
+	if faExit {
+		l.Logger.Fatalf(format, v...)
+	} else {
+		l.Logger.Panicf(format, v...)
+	}
 }
 
 func (f *flog) SetWriter(writer io.Writer) {
