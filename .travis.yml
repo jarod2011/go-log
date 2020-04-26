@@ -6,4 +6,10 @@ go:
   - 1.13.x
 
 script:
+  - overalls -project=github.com/jarod2011/go-log -covermode=count -ignore='.git,_vendor'
+  - goveralls -coverprofile=overalls.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - go test -race -coverprofile=coverage.txt -covermode=atomic
   - go test -v -test.bench=".*" .
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
