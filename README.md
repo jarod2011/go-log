@@ -3,6 +3,7 @@
 a simple go log package
 
 [![Build Status](https://travis-ci.org/jarod2011/go-log.svg?branch=master)](https://travis-ci.org/jarod2011/go-log)
+[![Coverage Status](https://coveralls.io/repos/github/jarod2011/go-log/badge.svg?branch=master)](https://coveralls.io/github/jarod2011/go-log?branch=master)
 
 ## log level
 
