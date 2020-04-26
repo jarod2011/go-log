@@ -1,6 +1,7 @@
 package go_log_test
 
 import (
+	"bytes"
 	log "github.com/jarod2011/go-log"
 	"sync/atomic"
 	"testing"
@@ -20,6 +21,52 @@ func TestFlog_Log(t *testing.T) {
 		t.Errorf("count should equal 8 but %d not", count)
 	}
 	t.Logf("all used %v", time.Since(timeStart))
+}
+
+func TestLogs(t *testing.T) {
+	buf := new(bytes.Buffer)
+	log.SetPrefix("[test]")
+	if log.GetPrefix() != "[test]" {
+		t.Error("set log prefix failure")
+	}
+	log.SetFatalExit(false)
+	log.SetLevel(log.Debug)
+	if log.GetLevel() != log.Debug {
+		t.Error("set log level failure")
+	}
+	logs := []log.Logger{log.D(), log.E(), log.W(), log.I()}
+	for _, l := range logs {
+		if buf.Len() > 0 {
+			t.Error("buffer should len 0")
+		}
+		l.SetWriter(buf)
+		l.Log(1)
+		t.Log(buf.Len())
+		if buf.Len() == 0 {
+			t.Errorf("%v write to buffer failure", l)
+		}
+		buf.Reset()
+		l.Logf("write %v", time.Now())
+		t.Log(buf.Len())
+		if buf.Len() == 0 {
+			t.Errorf("%v write to buffer failure", l)
+		}
+		buf.Reset()
+	}
+	f(t)
+}
+
+func f(t *testing.T) {
+	buf := new(bytes.Buffer)
+	defer func() {
+		err := recover()
+		t.Log(err)
+		if buf.Len() == 0 {
+			t.Error("fatal write to buffer failure")
+		}
+	}()
+	log.F().SetWriter(buf)
+	log.F().Log("1")
 }
 
 func t1() {
